@@ -23,32 +23,34 @@ window.addEventListener('DOMContentLoaded', function () {
 		if (gamemode == 'chess') gamemode = 'number';
 		else gamemode = 'chess';
 	});
+	//멀티플레이 버튼 누르면 팝업 띄움
 	const multipopup = document.getElementById('popup1');
 	multibtn = document.getElementById("multibtn");
 	multibtn.onclick = function () {
 		multipopup.style.display = 'block';
 	}
-
+	//제출 누르면 닉네임을 서버에 보냄
 	document.getElementById('submitButton').addEventListener('click', () => {
 		const nickname = document.getElementById('nicknameInput').value;
 		postname(nickname, gamemode);
 		multipopup.style.display = 'none';
 	});
 
+	//팝업 닫음
 	document.getElementById('popupcloseButton').addEventListener('click', () => {
 		multipopup.style.display = 'none';
 	});
+	
+	//싱글플레이 버튼. 따로 게임id 없이 바로 게임 화면으로 넘어감
 	document.getElementById('singlebtn').addEventListener('click', () => {
-		postname('Guest', gamemode);
-	});
-	document.getElementById('popupcloseButton').addEventListener('click', () => {
-		multipopup.style.display = 'none';
+		window.location.href = `https://franticfrizz.github.io/chess.html`;
 	});
 });
 
+//서버에 닉네임 전송하고 gameid받아오는 함수
 async function postname(name, type) {
 	// 서버에 name 전송
-	const response = await fetch('http://52.79.61.17:8080/users/' + type, {
+	const response = await fetch('https://52.79.61.17:8080/users/' + type, {
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'
@@ -64,7 +66,8 @@ async function postname(name, type) {
 	do {
 		try {
 			// 서버에 다시 userId 전송
-			const secondResponse = await fetch('http://52.79.61.17:8080/matchs/' + type, {
+			// 매칭이 이뤄지지 않으면(매칭 대기중인 사람이 없다면) 에러가 남. 따라서 매칭이 이뤄질때까지 1초마다 post
+			const secondResponse = await fetch('https://52.79.61.17:8080/matchs/' + type, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json'
